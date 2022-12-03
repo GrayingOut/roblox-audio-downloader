@@ -1,3 +1,5 @@
+package me.grayingout;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -73,7 +75,7 @@ public class RobloxAudioDownloader {
     }
 
     /**
-     * Gets the download URL for an aduio
+     * Gets the download URL for an audio
      * 
      * @param audioId The audio id
      * @return The URL

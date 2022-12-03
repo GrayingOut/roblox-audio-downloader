@@ -1,10 +1,12 @@
+package me.grayingout;
+
 import java.io.File;
 
 /**
  * The main class
  */
-public class Main {
-
+public class App {
+    
     /**
      * The main method
      * 
