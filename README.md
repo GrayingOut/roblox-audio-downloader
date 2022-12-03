@@ -4,10 +4,4 @@ Downloads the audio file of a Roblox audio from its id using some web scrapping 
 
 ## Usage
 
-**Compile**
-
-`javac -cp "src" -d "bin" src/Main.java`
-
-**Run**
-
-`java -cp "bin" Main <audio_id>`
+Its maven. Figure it out
