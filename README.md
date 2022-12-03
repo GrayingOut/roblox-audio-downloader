@@ -10,4 +10,4 @@ Downloads the audio file of a Roblox audio from its id using some web scrapping 
 
 **Run**
 
-`java -jar target\roblox-audio-downloader-1.0-SNAPSHOT-jar-with-dependencies.jar <audio_id>`
+`java -jar target\roblox-audio-downloader-1.0-jar-with-dependencies.jar <audio_id>`
