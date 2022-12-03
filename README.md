@@ -4,4 +4,10 @@ Downloads the audio file of a Roblox audio from its id using some web scrapping 
 
 ## Usage
 
-Its maven. Figure it out
+**Build**
+
+`mvn clean verify assembly:single`
+
+**Run**
+
+`java -jar target\roblox-audio-downloader-1.0-SNAPSHOT-jar-with-dependencies.jar <audio_id>`
