@@ -7,13 +7,15 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
 /**
  * This class is used to download audio from Roblox
  */
-public class RobloxAudioDownloader {
+public final class RobloxAudioDownloader {
 
     /**
      * Download a specific audio from its id
@@ -22,14 +24,12 @@ public class RobloxAudioDownloader {
      * @throws RobloxAudioDownloadException If a download exception occurs
      * @throws IOException If an I/O exception occurs
      */
-    public static File download(long audioId) throws RobloxAudioDownloadException, IOException {
-        // Get the URL
+    public static final File download(long audioId) throws RobloxAudioDownloadException, IOException {
+        /* Get the URL, download the file, and return it */
         String url = getDownloadURL(audioId);
-
-        // Get the audio data
+        
         File file = downloadAudio(url);
 
-        // Return file
         return file;
     }
 
@@ -39,38 +39,32 @@ public class RobloxAudioDownloader {
      * @param url The audio URL
      * @return The file
      */
-    private static File downloadAudio(String url) throws RobloxAudioDownloadException, IOException {
-        // Get HttpURLConnection
+    private final static File downloadAudio(String url) throws RobloxAudioDownloadException, IOException {
+        /* Open HttpURLConnection */
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-
-        // Connect
         con.connect();
 
-        // Get response code
+        /* Check success */
         int code = con.getResponseCode();
         if (code != 200) {
             throw new RobloxAudioDownloadException("Failed to download: Check the audio id and try again");
         }
 
-        // Get data
+        /* Download the audio file */
         InputStream in = con.getInputStream();
 
-        // Create file
-        String home = System.getProperty("user.home");
-        File file = new File(home + "/Downloads/Roblox-Download-"+UUID.randomUUID()+".mp3");
-
-        // Write to file
+        File file = new File(System.getProperty("user.home") + "/Downloads/Roblox-Download-" + UUID.randomUUID() + ".mp3");
         FileOutputStream out = new FileOutputStream(file);
 
-        byte[] buf = new byte[4096]; // Buffer of 4k
+        byte[] buf = new byte[4096]; /* 4K buffer */
+
         while (in.read(buf, 0, 4096) != -1) {
             out.write(buf);
         }
 
-        // Close file
         out.close();
 
-        // Return file
+        /* Return the downloaded file */
         return file;
     }
 
@@ -80,46 +74,41 @@ public class RobloxAudioDownloader {
      * @param audioId The audio id
      * @return The URL
      */
-    private static String getDownloadURL(long audioId) throws RobloxAudioDownloadException, IOException {
-        // Get HttpURLConnection
+    private final static String getDownloadURL(long audioId) throws RobloxAudioDownloadException, IOException {
+        /* Open HttpURLConnection */
         HttpURLConnection con = (HttpURLConnection) new URL("https://www.roblox.com/library/" + audioId).openConnection();
-                
-        // Connect
         con.connect();
 
-        // Get response code
+        /* Check success */
         int code = con.getResponseCode();
         if (code != 200) {
             throw new RobloxAudioDownloadException("Failed to download: Check the audio id and try again");
         }
 
-        // Get data
-        InputStream in = con.getInputStream();
-
+        /* Download the webpage */
         StringBuilder response = new StringBuilder();
 
-        int ch = 0;
-        while ((ch = in.read()) != -1) {
-            response.append((char) ch);
+        InputStream in = con.getInputStream();
+        byte[] buf = new byte[4096];
+
+        while (in.read(buf) != -1) {
+            response.append(new String(buf));
         }
+        
+        con.disconnect();
 
-        // Find audio URL tag attribute
-        Pattern attributePattern = Pattern.compile("data-mediathumb-url=\".+\"");
-        Matcher attributeMatcher = attributePattern.matcher(response);
+        /* Get the element */
+        Document doc = Jsoup.parse(response.toString());
+        Element element = doc.select("div[data-mediathumb-url]").first();
 
-        if (!attributeMatcher.find()) {
+        if (element == null) {
             throw new RobloxAudioDownloadException("Failed to download. Are you sure this asset is audio and is public?");
         }
 
-        // Get the attribute text
-        String attribute = response.substring(attributeMatcher.start(), attributeMatcher.end());
-
-        // Get the URL from the attribute
-        String url = attribute.substring(attribute.indexOf("\"") + 1, attribute.length() - 1);
+        /* Get the URL */
+        String url = element.attr("data-mediathumb-url");
         
-        // Disconnect
-        con.disconnect();
-        
+        /* Return the URL */
         return url;
     }
 

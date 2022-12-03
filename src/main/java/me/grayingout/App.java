@@ -5,7 +5,7 @@ import java.io.File;
 /**
  * The main class
  */
-public class App {
+public final class App {
     
     /**
      * The main method
